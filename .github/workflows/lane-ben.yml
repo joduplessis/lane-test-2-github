@@ -1,0 +1,33 @@
+name: Lane Ben
+on:
+  repository_dispatch:
+    types: [lane-ben-run]
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: lane-ben-${{ github.event.client_payload.task_id }}
+  cancel-in-progress: false
+jobs:
+  ben:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    environment: lane-ben-${{ github.event.client_payload.run_id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.19.0
+      - name: Run Ben
+        env:
+          BEN_RUN_ID: ${{ github.event.client_payload.run_id }}
+          BEN_TASK_ID: ${{ github.event.client_payload.task_id }}
+          BEN_API_URL: ${{ github.event.client_payload.lane_api_url }}
+          BEN_SETUP: ${{ github.event.client_payload.setup }}
+          BEN_REPOSITORY_ID: ${{ github.event.client_payload.repository_id }}
+        run: |
+          npm install --prefix "$RUNNER_TEMP/lane-ben" --no-audit --no-fund @lanehq/ben-runner@0.1.1
+          node "$RUNNER_TEMP/lane-ben/node_modules/@lanehq/ben-runner/dist/index.js"
