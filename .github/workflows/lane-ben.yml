@@ -29,5 +29,6 @@ jobs:
           BEN_SETUP: ${{ github.event.client_payload.setup }}
           BEN_REPOSITORY_ID: ${{ github.event.client_payload.repository_id }}
         run: |
-          npm install --prefix "$RUNNER_TEMP/lane-ben" --no-audit --no-fund @lanehq/ben-runner@0.1.1
+          # QA build of @lanehq/ben-runner@0.1.1 with the local exchange-timeout fix.
+          npm install --prefix "$RUNNER_TEMP/lane-ben" --no-audit --no-fund ./lanehq-ben-runner-0.1.1.tgz
           node "$RUNNER_TEMP/lane-ben/node_modules/@lanehq/ben-runner/dist/index.js"
